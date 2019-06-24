@@ -11,23 +11,27 @@
     <link rel="stylesheet" href="/assets/vendor/datepicker.min.css">
     <link rel='stylesheet' href='/assets/css/main.css' />
   </head>
-  
+
   <body>
     <div id="app">
       <a href="#" @click="view = 'table'">Таблица</a>
       <a href="#" @click="view = 'timeline'">Таймлайн</a>
       <hr>
       <input type="text" class="datetime">
-       
+
       <table border="1" v-show=" view == 'table' ">
-        <tr v-for="row in groups">
-          <td v-html="row.users.join('<br>')"></td>
+        <tr v-for="group in groups">
+          <td>
+            <template v-for="user in group.users">
+              <a :href="'/user.php?id=' + user.id">{{ user.name  }}</a> <br>
+            </template>
+          </td>
         </tr>
       </table>
 
       <div id="visualization" v-show=" view == 'timeline' "></div>
 
-                <!-- Button trigger modal -->
+      <!-- Button trigger modal -->
       <div style="display: none">
         <button type="button" class="btn btn-primary btn-lg showModalCreateTask" data-toggle="modal" data-target="#myModal">
           Launch demo modal
@@ -51,11 +55,7 @@
           </div>
         </div>
       </div>
-    
     </div>
-
-   
-
 
     <script src="/assets/vendor/jquery-3.4.1.min.js"></script>
     <script src="/assets/vendor/moment.min.js"></script>
@@ -64,8 +64,7 @@
     <script src="/assets/vendor/datepicker.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-   
-         
+
     <script src="/assets/js/main.js"></script>
 
     <!--
