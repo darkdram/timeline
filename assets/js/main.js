@@ -1,13 +1,50 @@
+Vue.component('multiselect', VueMultiselect)
+// Vue.component( 'date-picker' , DatePicker )
+Vue.use( DatePicker )
+
+Vue.component('modal', {
+  template: '#modal-template'
+})
+
 var app = new Vue({
   el: '#app',
   data: {
     view: 'timeline',
     tasks: [],
     groups: [],
+    groupsTasksCounts: [],
     groupsMaxTask: 0,
     timeline: null,
     modal_data: {
       modal_header: 'Добавление задачи'
+    },
+    dates: {
+      contract: {
+        report: '',
+        admittance: '',
+        work: ''
+      },
+      real: {
+        report: '',
+        admittance: '',
+        work: ''
+      }
+    },
+    action: 'add', // edit
+    showModal: false
+  },
+  computed: {
+    action_label: function() {
+      var vm = this,
+        label = ''
+
+      if ( vm.action == 'add' ) {
+        label = 'Добавление задачи'
+      }  else if ( vm.action == 'edit' ) {
+        label = 'Редактирование задачи'
+      }
+
+      return label
     }
   },
   watch: {
@@ -25,19 +62,13 @@ var app = new Vue({
 
     vm.fetchTimelineInfo()
 
-    // items.remove(1)
-    // groups.remove(1)
-
-    // vm.tasks.length = 0
-    // vm.groups.length = 0
-
-    $('.datetime').datepicker({
-      range: true,
-      multipleDatesSeparator: " - ",
-      onSelect: function(formattedDate, date, inst) {
-        console.log(formattedDate, date, inst)
-      }
-    })
+    // $('.datetime').datepicker({
+    //   range: true,
+    //   multipleDatesSeparator: " - ",
+    //   onSelect: function(formattedDate, date, inst) {
+    //     console.log(formattedDate, date, inst)
+    //   }
+    // })
   
   },
   methods: {
@@ -125,10 +156,7 @@ var app = new Vue({
           })
         }
 
-        // console.log( group_id )
-
         schedule[i].group = group_id
-        // console.log( schedule[i].group )
       }
 
       var _tasks = [  ]
@@ -151,7 +179,7 @@ var app = new Vue({
 
             var _new_task = {
               id: parseInt( jsched[j].id ) ,
-              content: jsched[j].content + schedule[i].group,
+              content: jsched[j].content,
               group: parseInt( schedule[i].group ),
               id_project: parseInt( jsched[j].id_project ),
               type: jsched[j].type,
@@ -165,46 +193,58 @@ var app = new Vue({
               _new_task.subgroup = 'task' + jsched[j].group + '_' + jsched[j].subtype
             }
 
-            // console.log( _new_task )
             _tasks.push( _new_task )
           }
         }
       }
 
-      // vm.tasks.length = 0
+      var _groupsTasksCounts = []
+      grps.forEach(function(grp){
+        var curr_gtc_idx = _groupsTasksCounts.length
+        _groupsTasksCounts.push({
+          id: grp.id,
+          cnt: 0
+        })
 
+        schedule.forEach(function( _tsk ){
+          if ( _tsk.group == grp.id ) {
+            _groupsTasksCounts[ curr_gtc_idx ].cnt++
+          }
+        })
+      })
 
       vm.tasks = _tasks
       vm.groups = grps
+      vm.groupsTasksCounts = _groupsTasksCounts
 
       if ( vm.timeline !== null ) {
-        // vm.groups.length = 0
         vm.timeline.setItems( _tasks )
         vm.timeline.setGroups( grps )
       } else {
-        // DOM element where the Timeline will be attached
         var container = document.getElementById('visualization');
 
-        // Create a DataSet (allows two way data-binding)
+        var items  = new vis.DataSet(vm.tasks),
+            groups = new vis.DataSet(vm.groups)
 
-        var items = new vis.DataSet(vm.tasks)
-        var groups = new vis.DataSet(vm.groups)
-        // Configuration for the Timeline
         var options = {
           locale: "ru",
-          editable: true,
-          groupEditable: true,
+          editable: {
+            add: true,          // add new items by double tapping
+            updateTime: true,   // drag items horizontally
+            updateGroup: false, // drag items from one group to another
+            remove: false,      // delete an item by tapping the delete button top right
+            overrideItems: true // allow these options to override item.editable
+          },
+          groupEditable: false,
           stack: false,
           groupTemplate: function(group){
-            container = document.createElement('div');
+            var container = document.createElement('div');
 
-            group.users.forEach(function(element) {
-              // console.log( element )
-              brigada_user = document.createElement('p');
-              brigada_user.style.cssText = "font-size: 11px;"
-              brigada_user.innerHTML = element.name;
-              container.insertAdjacentElement('beforeend',brigada_user);
-            });
+            group.users.forEach(function(person){
+               var wrap = document.createElement('div')
+               wrap.innerHTML = '<a href="/users.php?id=' + person.id +'">' + person.name + '</a>'
+               container.insertAdjacentElement('beforeend', wrap);
+            })
 
             return container;
           },
@@ -214,28 +254,19 @@ var app = new Vue({
             a.value = b.value;
             b.value = v;
           },
-
           onAdd: function (item, callback){
             console.log( 'onAdd', item )
-            // $('#exampleModalCenter').on('shown.bs.modal', function () {
-            //   $('.editor_input input[name=content]').val(item.content)
-            // });
-            // $('#exampleModalCenter').modal();
-            // callback(item);
+            vm.showModal = true
+            vm.action = 'add'
           },
-
           onUpdate: function (item, callback) {
             console.log( 'onUpdate', item )
-            // $('#exampleModalCenter').on('shown.bs.modal', function () {
-            //   $('.editor_input input[name=content]').val(item.content)
-            // });
-            // $('#exampleModalCenter').modal();
-            // callback(item);
+            vm.showModal = true
+            vm.action = 'edit'
           },
           orientation: 'both',
         }
 
-        // Create a Timeline
         vm.timeline = new vis.Timeline(container);
         vm.timeline.setOptions(options);
         vm.timeline.setGroups(groups);
