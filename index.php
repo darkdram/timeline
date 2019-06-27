@@ -35,13 +35,37 @@
         <div id="visualization"></div>
       </div>
 
-      <button id="show-modal" @click="showModal = true">Show Modal</button>
+      <!-- <button id="show-modal" @click="showModal = true">Show Modal</button> -->
       <!-- use the modal component, pass in the prop -->
       <modal v-if="showModal" @close="showModal = false">
         <!-- <input type="text" class="datetime"> -->
         <h3 slot="header">{{ action_label }}</h3>
 
         <div slot="body">
+          <div class="row">
+            <div class="col-md-12">
+              <h3>О проекте</h3>
+            </div>
+          </div>
+
+          <div class="row dates-row">
+            <div class="col-md-4">
+              Название проекта
+            </div>
+            <div class="col-md-8">
+              <input type="text" v-model="task_name" class="form-control">
+            </div>
+          </div>
+
+          <div class="row dates-row">
+            <div class="col-md-4">
+              Сроки
+            </div>
+            <div class="col-md-8">
+              <date-picker v-model="dates.task_time" range lang="ru" format="YYYY-MM-DD" range-separator="-" confirm></date-picker>
+            </div>
+          </div>
+
           <div class="row">
             <div class="col-md-12">
               <h3>Договорные сроки</h3>
@@ -71,6 +95,7 @@
               <date-picker v-model="dates.contract.report" range lang="ru" format="YYYY-MM-DD" range-separator="-" confirm></date-picker>
             </div>
           </div>
+
           <div class="row">
             <div class="col-md-12">
               <h3>Реальные сроки</h3>
@@ -81,7 +106,7 @@
               Допуск
             </div>
             <div class="col-md-8">
-              <date-picker v-model="dates.real.admittance" range lang="ru" format="YYYY-MM-DD" range-separator="-" confirm></date-picker>
+              <date-picker v-model="dates.real.admittance" range lang="ru" format="YYYY-MM-DD" valueType="'date'" range-separator="-" confirm></date-picker>
             </div>
           </div>
           <div class="row dates-row">
@@ -100,12 +125,23 @@
               <date-picker v-model="dates.real.report" range lang="ru" format="YYYY-MM-DD" range-separator="-" confirm></date-picker>
             </div>
           </div>
+        </div>
 
+        <div class="row">
+          <div class="col-md-12">
+            <h3>Назначенные сотрудники</h3>
+          </div>
+          <div class="col-md-12">
+            <multiselect v-if="workers.length" v-model="users" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="id" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+          </div>
         </div>
 
         <div slot="footer">
           <button class="modal-default-button btn btn-success" @click="showModal = false">
             Добавить
+          </button>
+          <button class="modal-default-button btn btn-default" @click="showModal = false">
+            Закрыть
           </button>
         </div>
       </modal>
@@ -117,19 +153,16 @@
         <div class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-container">
-
               <div class="modal-header">
                 <slot name="header">
                   default header
                 </slot>
               </div>
-
               <div class="modal-body">
                 <slot name="body">
                   default body
                 </slot>
               </div>
-
               <div class="modal-footer">
                 <slot name="footer">
                   default footer
@@ -153,7 +186,6 @@
     <!-- <script src="/assets/vendor/datepicker.min.js"></script> -->
     <script src="/assets/vendor/datepicker.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
 
     <script src="/assets/js/main.js"></script>
 
