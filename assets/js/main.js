@@ -18,18 +18,22 @@ var app = new Vue({
     modal_data: {
       modal_header: 'Добавление задачи'
     },
+    users: [],
+    task_name: '',
     dates: {
+      task_time: [],
       contract: {
-        report: '',
-        admittance: '',
-        work: ''
+        report: ['0000-00-00','0000-00-00'],
+        admittance: ['0000-00-00','0000-00-00'],
+        work: ['0000-00-00','0000-00-00']
       },
       real: {
-        report: '',
-        admittance: '',
-        work: ''
+        report: ['0000-00-00','0000-00-00'],
+        admittance: ['0000-00-00','0000-00-00'],
+        work: ['0000-00-00','0000-00-00']
       }
     },
+    datepickerSelected: false,
     action: 'add', // edit
     showModal: false
   },
@@ -112,7 +116,6 @@ var app = new Vue({
         }
       }
 
-
       this.timeline.setItems(_ntasks)
     },
     fetchTimelineInfo: function() {
@@ -123,6 +126,47 @@ var app = new Vue({
         success: function(res) {
           console.log( res )
           vm.createNewTimeline( res )
+        }
+      })
+    },
+    formatDatesRange: function( _dates ) {
+      return _dates.map(function(_date){
+        if ( _date == '0000-00-00' ) {
+          return _date
+        }
+
+        return moment(_date).format('YYYY-MM-DD')
+      })
+    },
+    createTask: function() {
+      var vm = this
+
+      var _data = {
+        action: vm.action,
+        task: {
+          name: vm.task_name,
+          time: vm.formatDatesRange( vm.dates.task_time )
+        },
+        times: {
+          real: {
+            admittance: vm.formatDatesRange( vm.dates.real.admittance ),
+            work:       vm.formatDatesRange( vm.dates.real.work ),
+            report:     vm.formatDatesRange( vm.dates.real.report )
+          },
+          contract: {
+            admittance: vm.formatDatesRange( vm.dates.contract.admittance ),
+            work:       vm.formatDatesRange( vm.dates.contract.work ),
+            report:     vm.formatDatesRange( vm.dates.contract.report )
+          }
+        }
+      }
+
+      $.ajax({
+        method: 'POST',
+        url: '/data/printRes.php',
+        data: JSON.stringify(_data),
+        success: function( res ) {
+          console.log( res )
         }
       })
     },
@@ -272,6 +316,17 @@ var app = new Vue({
         vm.timeline.setGroups(groups);
         vm.timeline.setItems(items);
       }
+    },
+    addTag (newTag) {
+      const tag = {
+        name: newTag,
+        code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000)),
+        status: 'new'
+      }
+      this.options.push(tag)
+      this.value.push(tag)
     }
+
+
   }
 })

@@ -10,8 +10,6 @@
   z-index: 1300;
 }
 
-
-
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -50,18 +48,13 @@
   margin: 20px 0;
 }
 
-.modal-default-button {
-  float: right;
+.modal-footer {
+  text-align: left;
 }
 
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
+.modal-default-button {
+  /*float: right;*/
+}
 
 .modal-enter {
   opacity: 0;
@@ -77,15 +70,15 @@
   transform: scale(1.1);
 }
 
-
-
 .mx-calendar-icon, .mx-input-icon {
   height: auto;
 }
 
-
-
 .dates-row {
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.dates-row .mx-datepicker-range {
+  width: 100%;
 }
