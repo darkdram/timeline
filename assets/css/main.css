@@ -29,7 +29,7 @@
 
 .modal-container {
   min-width: 300px;
-  max-width: 600px;
+  max-width: 750px;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;
@@ -81,4 +81,76 @@
 
 .dates-row .mx-datepicker-range {
   width: 100%;
+}
+
+
+.table > tbody > tr > td:nth-child(1),
+.table > tbody > tr > td:nth-child(2) {
+  min-width: 200px;
+}
+
+.inner-table {
+  border: 0;
+}
+
+.inner-table td {
+  padding: 0 5px;
+  border: 1px solid black; 
+}
+
+.inner-table tr:first-child td {
+  border-top: 0;
+}
+
+.inner-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.inner-table td:first-child {
+  border-left: 0;
+}
+
+.inner-table td:last-child {
+  border-right: 0;
+}
+
+
+/*table table td {
+  padding: 3px 5px;
+}*/
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.mx-datepicker {
+  width: 200px;
+}
+
+ul.workers {
+  list-style-type: none;
+  padding-left: 0;
+  max-width: 300px;
+}
+
+ul.workers li {
+  position: relative;
+  padding: 0 10px;
+  height: 30px;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+.removeBtn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%); 
+  width: 30px;
+  height: 30px;
+  text-align: center;
+}
+
+ul.workers li:hover {
+  background: #7aebfd; 
 }

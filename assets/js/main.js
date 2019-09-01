@@ -1,9 +1,67 @@
-Vue.component('multiselect', VueMultiselect)
+Vue.component('multiselect', VueMultiselect.default)
 // Vue.component( 'date-picker' , DatePicker )
 Vue.use( DatePicker )
 
 Vue.component('modal', {
   template: '#modal-template'
+})
+
+Vue.component('task-table', {
+  props: ['tasks'],
+  template: '#tbl',
+  mounted: function() {
+    var vm = this
+
+    if ( vm.tasks ) {
+      vm.tasks.forEach(function(el, idx){
+        if ( el.subtype && el.subtype ) {
+          // console.log( el, el.type, el.ttype )
+          // console.log( vm, vm.dates, el.type, vm.dates[ el.type ]  )
+          // console.log( el.type, el.ttype, vm.dates['real']  )
+          if ( vm.dates[ el.subtype ] && vm.dates[ el.subtype ][ el.ttype ] ) {
+            console.log('ok')
+            vm.dates[ el.subtype ][ el.ttype ]['start'] = moment(el.start, 'YYYY-MM-DD').format('DD.MM')
+            vm.dates[ el.subtype ][ el.ttype ]['end'] = moment(el.end, 'YYYY-MM-DD').format('DD.MM')
+          }
+        } 
+      })
+    }
+
+  },
+  data: function() {
+    return {
+      dates: {
+        contract: {
+          report: {
+            start: '-',
+            end: '-'
+          },
+          admittance: {
+            start: '-',
+            end: '-'
+          },
+          work: {
+            start: '-',
+            end: '-'
+          }
+        },
+        real: {
+          report: {
+            start: '-',
+            end: '-'
+          },
+          admittance: {
+            start: '-',
+            end: '-'
+          },
+          work: {
+            start: '-',
+            end: '-'
+          }
+        }
+      }
+    }
+  }
 })
 
 var app = new Vue({
@@ -12,6 +70,7 @@ var app = new Vue({
     view: 'timeline',
     tasks: [],
     groups: [],
+    sgroups:[],
     groupsTasksCounts: [],
     groupsMaxTask: 0,
     timeline: null,
@@ -19,12 +78,14 @@ var app = new Vue({
       modal_header: 'Добавление задачи'
     },
     users: [],
+    susers: [],
     task_name: '',
+    worker_name: '',
+    sched: null,
     dates: {
       task_time: [],
       contract: {
         report: ['0000-00-00','0000-00-00'],
-        admittance: ['0000-00-00','0000-00-00'],
         work: ['0000-00-00','0000-00-00']
       },
       real: {
@@ -35,7 +96,9 @@ var app = new Vue({
     },
     datepickerSelected: false,
     action: 'add', // edit
-    showModal: false
+    showModal: false,
+    showWorkerModal: false,
+    notBeforeV: ''
   },
   computed: {
     action_label: function() {
@@ -46,6 +109,18 @@ var app = new Vue({
         label = 'Добавление задачи'
       }  else if ( vm.action == 'edit' ) {
         label = 'Редактирование задачи'
+      }
+
+      return label
+    },
+    action_worker_label: function() {
+      var vm = this,
+        label = ''
+
+      if ( vm.action == 'add' ) {
+        label = 'Добавление работника'
+      }  else if ( vm.action == 'edit' ) {
+        label = 'Редактирование работника'
       }
 
       return label
@@ -64,7 +139,13 @@ var app = new Vue({
   mounted: function() {
     var vm = this
 
+    var _view = $('input[name=view]').val()
+
+    vm.view = _view
+
     vm.fetchTimelineInfo()
+    vm.fetchWorkersList()
+    vm.fetchGroupsList()
 
     // $('.datetime').datepicker({
     //   range: true,
@@ -94,6 +175,38 @@ var app = new Vue({
 
       return true
     },
+    addWorker: function() {
+      var vm = this
+
+      $.ajax({
+        method: 'POST',
+        url: '/data/addWorker.php',
+        data: JSON.stringify( { name: vm.worker_name } ),
+        success: function(res) {
+          // console.log( res )
+          var _res = res.status == 'success' ? 'Работник добавлен' : 'Не удалось добавить работника'
+          // alert( _res )
+          vm.worker_name = ''
+          vm.showWorkerModal = false
+          vm.fetchWorkersList()
+        }
+      })
+    },
+    removeWorker: function( worker_id, worker_name ) {
+      var vm = this
+      if ( confirm("Вы действительно хотите удалить сотрудника \"" + worker_name + "\" ?" ) ) {
+        $.ajax({
+          method: 'POST',
+          url: '/data/removeWorker.php',
+          data: JSON.stringify( { worker_id: worker_id } ),
+          success: function(res) {
+            // console.log( res )
+            alert( res.message )
+            vm.fetchWorkersList()
+          }
+        })
+      }
+    },
     findGroup: function( needle, haystask ) {
       var vm = this
 
@@ -110,7 +223,7 @@ var app = new Vue({
     updateTimeline: function() {
       var _ntasks = []
 
-      for( var i =0; i < _ntasks.length; i++  ) {
+      for( var i =0; i < _ntasks.lenght; i++  ) {
         if ( _ntasks[i].type == 'background' ) {
           delete _ntasks[i].subgroup
         }
@@ -126,6 +239,29 @@ var app = new Vue({
         success: function(res) {
           console.log( res )
           vm.createNewTimeline( res )
+        }
+      })
+    },
+    fetchWorkersList: function() {
+      var vm = this
+      $.ajax({
+        method: 'GET',
+        url: '/data/workers_list.php',
+        success: function(res) {
+          console.log( res )
+          vm.users = res
+        }
+      })
+    },
+    fetchGroupsList: function() {
+      var vm = this
+      $.ajax({
+        method: 'GET',
+        url: '/data/groups_list.php',
+        success: function(res) {
+          console.log( res )
+          var _groups = Object.entries(res)
+          vm.sgroups = _groups.map(function(cv){ return cv[1] })
         }
       })
     },
@@ -163,7 +299,8 @@ var app = new Vue({
 
       $.ajax({
         method: 'POST',
-        url: '/data/printRes.php',
+        // url: '/data/printRes.php',
+        url: '/data/addTask.php',
         data: JSON.stringify(_data),
         success: function( res ) {
           console.log( res )
@@ -173,6 +310,8 @@ var app = new Vue({
     createNewTimeline: function( schedule ) {
       var vm = this,
           cnt = schedule.length
+
+
 
       for ( var i = 0; i < cnt; i++ ) {
         schedule[i].users.sort( function(v1, v2) { return v1.id - v2.id } )
@@ -257,64 +396,69 @@ var app = new Vue({
         })
       })
 
+      vm.sched = schedule
+
       vm.tasks = _tasks
       vm.groups = grps
       vm.groupsTasksCounts = _groupsTasksCounts
 
-      if ( vm.timeline !== null ) {
-        vm.timeline.setItems( _tasks )
-        vm.timeline.setGroups( grps )
-      } else {
-        var container = document.getElementById('visualization');
+      if ( vm.view == 'timeline' ) {
 
-        var items  = new vis.DataSet(vm.tasks),
-            groups = new vis.DataSet(vm.groups)
+        if ( vm.timeline !== null ) {
+          vm.timeline.setItems( _tasks )
+          vm.timeline.setGroups( grps )
+        } else {
+          var container = document.getElementById('visualization');
 
-        var options = {
-          locale: "ru",
-          editable: {
-            add: true,          // add new items by double tapping
-            updateTime: true,   // drag items horizontally
-            updateGroup: false, // drag items from one group to another
-            remove: false,      // delete an item by tapping the delete button top right
-            overrideItems: true // allow these options to override item.editable
-          },
-          groupEditable: false,
-          stack: false,
-          groupTemplate: function(group){
-            var container = document.createElement('div');
+          var items  = new vis.DataSet(vm.tasks),
+              groups = new vis.DataSet(vm.groups)
 
-            group.users.forEach(function(person){
-               var wrap = document.createElement('div')
-               wrap.innerHTML = '<a href="/users.php?id=' + person.id +'">' + person.name + '</a>'
-               container.insertAdjacentElement('beforeend', wrap);
-            })
+          var options = {
+            locale: "ru",
+            editable: {
+              add: true,          // add new items by double tapping
+              updateTime: true,   // drag items horizontally
+              updateGroup: false, // drag items from one group to another
+              remove: false,      // delete an item by tapping the delete button top right
+              overrideItems: true // allow these options to override item.editable
+            },
+            groupEditable: false,
+            stack: false,
+            groupTemplate: function(group){
+              var container = document.createElement('div');
 
-            return container;
-          },
+              group.users.forEach(function(person){
+                 var wrap = document.createElement('div')
+                 wrap.innerHTML = '<a href="/users.php?id=' + person.id +'">' + person.name + '</a>'
+                 container.insertAdjacentElement('beforeend', wrap);
+              })
 
-          groupOrderSwap: function (a, b, groups) {
-            var v = a.value;
-            a.value = b.value;
-            b.value = v;
-          },
-          onAdd: function (item, callback){
-            console.log( 'onAdd', item )
-            vm.showModal = true
-            vm.action = 'add'
-          },
-          onUpdate: function (item, callback) {
-            console.log( 'onUpdate', item )
-            vm.showModal = true
-            vm.action = 'edit'
-          },
-          orientation: 'both',
+              return container;
+            },
+
+            groupOrderSwap: function (a, b, groups) {
+              var v = a.value;
+              a.value = b.value;
+              b.value = v;
+            },
+            onAdd: function (item, callback){
+              console.log( 'onAdd', item )
+              vm.showModal = true
+              vm.action = 'add'
+            },
+            onUpdate: function (item, callback) {
+              console.log( 'onUpdate', item )
+              vm.showModal = true
+              vm.action = 'edit'
+            },
+            orientation: 'both',
+          }
+
+          vm.timeline = new vis.Timeline(container);
+          vm.timeline.setOptions(options);
+          vm.timeline.setGroups(groups);
+          vm.timeline.setItems(items);
         }
-
-        vm.timeline = new vis.Timeline(container);
-        vm.timeline.setOptions(options);
-        vm.timeline.setGroups(groups);
-        vm.timeline.setItems(items);
       }
     },
     addTag (newTag) {
@@ -325,6 +469,9 @@ var app = new Vue({
       }
       this.options.push(tag)
       this.value.push(tag)
+    },
+    groupSelectLabel: function(el) {
+      return el.id + ' - ' + el.name
     }
 
 

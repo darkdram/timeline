@@ -1,8 +1,8 @@
 <?php
+// 
+// require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 
-require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-
-use Respect\Validation\Validator as v;
+// use Respect\Validation\Validator as v;
 
 $data = file_get_contents('php://input');
 
@@ -49,23 +49,24 @@ if ( isset($json['times']) ) {
     //$time_type = real, contract
     foreach ($time_times as $time_sub_type => $new_times) {
       // $time_sub_type = admittance, work, report
-      echo '$dates[' . $time_type . '][' . $time_sub_type. ']' . PHP_EOL;
-
+ 
       if ( isset( $dates[$time_type][$time_sub_type] ) ) {
         foreach ($new_times as $tt => $tv) {
           //$tt - start(0), end(1)
-          if ( v::date('Y-m-d')->validate( $tv ) ) {
+          // if ( v::date('Y-m-d')->validate( $tv ) ) {
             $idx = $tt == 0  ? 'start' : 'end';
             $dates[$time_type][$time_sub_type][ $idx ] = $tv;
-          }
+          // echo '$dates[' . $time_type . '][' . $time_sub_type. '][' . $idx . '] = \'' . $tv . '\'' . PHP_EOL;
+
+          // }
         }
       }
     }
   }
 }
 
-var_dump($json);
+// var_dump($json);
 
-var_dump($dates);
+// var_dump($dates);
 
 

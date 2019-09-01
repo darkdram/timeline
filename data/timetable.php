@@ -13,7 +13,7 @@ for( $i=0, $cnt = count( $struct ); $i < $cnt; $i++ ) {
   $workersRes = $dbh->query( $workers );
   $workersArr = $workersRes->fetchAll( PDO::FETCH_ASSOC );
   $struct[ $i ][ 'users' ] = $workersArr;
-  $struct[ $i ][ 'group'   ] = $struct[ $i ][ 'id' ];
+  $struct[ $i ][ 'group' ] = $struct[ $i ][ 'id' ];
 
   $timeschedule = "SELECT * FROM `timetable` WHERE `group` = " . $struct[ $i ][ 'id' ];
   // var_dump($timeschedule);

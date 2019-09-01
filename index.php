@@ -15,20 +15,51 @@
   </head>
 
   <body>
-    <div id="app">
+
+    <div class="container-fluid">
+      <div class="col-md-2" style="border: 1px solid red">sidebaar</div>
+      <div class="col-md-8">
+        
+        <div id="app">
       <a href="#" @click="view = 'table'">Таблица</a>
       <a href="#" @click="view = 'timeline'">Таймлайн</a>
       <hr>
 
-      <table border="1" v-show=" view == 'table' ">
-        <tr v-for="group in groups">
-          <td>
-            <template v-for="user in group.users">
-              <a :href="'/user.php?id=' + user.id">{{ user.name  }}</a> <br>
-            </template>
-          </td>
-        </tr>
-      </table>
+      <div  v-show=" view == 'table' ">
+        <table border="1" class="schedule">
+          <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td v-for=" tsk in sched " style="text-align: center;">
+              {{ tsk.content }}
+            </td>
+          </tr>
+          <tr v-for="group in groups">
+            <td>
+              <template v-for="user in group.users">
+                <a :href="'/user.php?id=' + user.id">{{ user.name  }}</a> <br>
+              </template>
+            </td>
+            <td>
+              <table border="1">
+                <tr><td>Дог. сроки н/к/отч</td></tr>
+                <tr><td>Допуск</td></tr>
+                <tr><td>Проведение работ</td></tr>
+                <tr><td>Отчеты  к/отпр</td></tr>
+              </table>
+            </td>
+            <td v-for=" tsk in sched ">
+              <!-- <task-table :tasks=" tsk "></task-table> -->
+              <template v-if="group.id == tsk.group">
+                <task-table :tasks=" tsk.tasks "></task-table>
+              </template>
+              <template v-else>
+                <task-table :tasks=" null "></task-table>
+              </template>
+            </td>
+          </tr>
+        </table>
+      </div>
 
       
       <div  v-show=" view == 'timeline' ">
@@ -125,16 +156,18 @@
               <date-picker v-model="dates.real.report" range lang="ru" format="YYYY-MM-DD" range-separator="-" confirm></date-picker>
             </div>
           </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <h3>Назначенные сотрудники</h3>
+            </div>
+            <div class="col-md-12">
+              <multiselect  v-model="susers" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="id" :options="users" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
+            </div>
+          </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-12">
-            <h3>Назначенные сотрудники</h3>
-          </div>
-          <div class="col-md-12">
-            <multiselect v-if="workers.length" v-model="users" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="name" track-by="id" :options="options" :multiple="true" :taggable="true" @tag="addTag"></multiselect>
-          </div>
-        </div>
+
 
         <div slot="footer">
           <button class="modal-default-button btn btn-success" @click="showModal = false">
@@ -147,6 +180,9 @@
       </modal>
 
     </div>
+      </div>
+    </div>
+
 
     <script type="text/x-template" id="modal-template">
       <transition name="modal">
@@ -175,6 +211,30 @@
           </div>
         </div>
       </transition>
+    </script>
+
+    <script type="text/x-template" id="tbl">
+      <table border="1" width="100%">
+        <tr>
+          <td width="33%">&nbsp;</td>
+          <td width="33%">&nbsp;</td>
+          <td width="33%">{{ dates.contract.report.start }}</td>
+        </tr>
+        <tr>
+          <td>{{ dates.real.admittance.start }}</td>
+          <td>{{ dates.real.admittance.end }}</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>{{ dates.real.work.start }}</td>
+          <td>{{ dates.real.work.start }}</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td colspan="2">{{ dates.real.report.start }}</td>
+          <td>{{ dates.real.report.end }}</td>
+        </tr>
+      </table>
     </script>
 
     <!-- <script src="/assets/vendor/locale/ru.js"></script> -->
