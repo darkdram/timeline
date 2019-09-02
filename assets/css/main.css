@@ -127,13 +127,15 @@
   width: 200px;
 }
 
-ul.workers {
+ul.workers,
+ul.groups {
   list-style-type: none;
   padding-left: 0;
   max-width: 300px;
 }
 
-ul.workers li {
+ul.workers li,
+ul.groups li {
   position: relative;
   padding: 0 10px;
   height: 30px;
@@ -151,6 +153,20 @@ ul.workers li {
   text-align: center;
 }
 
-ul.workers li:hover {
+ul.workers li:hover,
+ul.groups li:hover {
   background: #7aebfd; 
+}
+
+.menu_item {
+  display: block;
+  padding: 0 10px;
+  margin: 5px 0;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 1px solid gray;
+}
+
+.menu_item:hover {
+  background: #7aebfd;
 }

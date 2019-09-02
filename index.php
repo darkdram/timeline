@@ -1,3 +1,9 @@
+<?php
+header('Location: /timeline.php');
+die();
+
+?>
+
 <html>
   <head>
     <title>Hellfire</title>
@@ -17,7 +23,7 @@
   <body>
 
     <div class="container-fluid">
-      <div class="col-md-2" style="border: 1px solid red">sidebaar</div>
+      <div class="col-md-2" style="border: 1px solid red"><? require './inc/sidebar.php'; ?></div>
       <div class="col-md-8">
         
         <div id="app">

@@ -11,22 +11,30 @@ if ( !empty($data) ) {
 
   // var_dump($data, $json_data);
 
-  if ( isset( $json_data['name'] ) ) {
-    $worker_name = htmlspecialchars( trim( $json_data['name'] ) );
+  if ( isset( $json_data['title'] ) ) {
+    $group_name = htmlspecialchars( trim( $json_data['title'] ) );
     try {
       $dbh->beginTransaction();
-      $query = "INSERT INTO groups ( `name` ) VALUES ( '{$worker_name}' )";
+      $query = "INSERT INTO groups ( `name` ) VALUES ( '{$group_name}' )";
       $res = $dbh->query( $query );
-      $worker_id = $dbh->lastInsertId();
+      $group_id = $dbh->lastInsertId();
       $dbh->commit();
 
       $result = array(
         'status' => 'success',
+        'message' => 'Бригада  добавлена',
         'group' => array(
-          'name' => $worker_name,
-          'id' => $worker_id
+          'name' => $group_name,
+          'id' => $group_id
         )
       );
+
+      foreach( $json_data['workers'] as $worker ) {
+        $query = "INSERT INTO assigned_workers ( `id_worker`, `id_group` ) VALUES ( {$worker['id']}, {$group_id} )";
+        $res = $dbh->query( $query );
+
+      }
+
     } catch( Exeption $e ) {
       $result = array(
         'status' => 'error',

@@ -2,7 +2,7 @@
 
 require '../system/config.php';
 
-$query = "SELECT g.id as gid, g.name as gname, ag.worker_id as agwi, w.name as wname FROM `groups` g  left join assigned_groups ag on g.id = ag.group_id LEFT join workers w on ag.worker_id = w.id order by g.id";
+$query = "select g.id as gid, g.name as gname, aw.id_worker as agwi, w.name as wname from groups g left JOIN assigned_workers aw on g.id = aw.id_group LEFT join workers w on w.id = aw.id_worker";
 
 $res = $dbh->query($query);
 $workers = $res->fetchAll( PDO::FETCH_ASSOC );

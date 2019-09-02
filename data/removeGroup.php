@@ -12,16 +12,16 @@ if ( !empty($data) ) {
   // var_dump($data, $json_data);
 
   if ( isset( $json_data['group_id'] ) ) {
-    $worker_id = intval( $json_data['worker_id'] );
+    $group_id = intval( $json_data['group_id'] );
 
     try {
       $dbh->beginTransaction();
-      $query = "DELETE FROM assigned_groups WHERE worker_id = {$worker_id}";
+      $query = "DELETE FROM assigned_workers WHERE group_id = {$group_id}";
       $res = $dbh->query( $query );
       // var_dump( $res, $query, $dbh->errorInfo() );
     
-      if ( $res ) {
-        $query = "DELETE FROM workers WHERE id = {$worker_id}";
+      // if ( $res ) {
+         $query = "DELETE FROM groups WHERE id = {$group_id}";
         $res = $dbh->query( $query );    
 
         if ( $res ) {
@@ -29,15 +29,15 @@ if ( !empty($data) ) {
 
           $result = array(
             'status' => 'success',
-            'message' => 'Работник удален'
+            'message' => 'Бригада удалена'
           );
         } else {
           $dbh->rollBack();
-          $er = new Exception('Не удалось удалить работника');
+          $er = new Exception('Не удалось удалить бригаду');
         }   
-      } else {
-        $er = new Exception('Не удалось удалить работника');
-      }
+      // } else {
+      //   $er = new Exception('Не удалось удалить работника');
+      // }
 
       // var_dump( $res, $query, $dbh->errorInfo() );
 
@@ -51,7 +51,7 @@ if ( !empty($data) ) {
   } else {
     $result = array(
       'status' => 'error',
-      'message' => 'Не удалось удалить работника'
+      'message' => 'Не удалось удалить бригаду'
     );
   }
 } else {

@@ -74,8 +74,27 @@ var app = new Vue({
     groupsTasksCounts: [],
     groupsMaxTask: 0,
     timeline: null,
-    modal_data: {
-      modal_header: 'Добавление задачи'
+    project_modal_data: {
+      title: '',
+      dates: {
+        contract: {
+          work: ['0000-00-00','0000-00-00'],
+          report: '0000-00-00'
+        },
+        real: {
+          work:   ['0000-00-00','0000-00-00'],
+          adm:    ['0000-00-00','0000-00-00'],
+          report: ['0000-00-00','0000-00-00']
+        }
+      },
+      group: {
+        id: -1,
+        name: ''
+      }
+    },
+    groups_modal_data: {
+      title: '',
+      workers: []
     },
     users: [],
     susers: [],
@@ -207,6 +226,21 @@ var app = new Vue({
         })
       }
     },
+    removeGroup: function( group_id, group_name ) {
+      var vm = this
+      if ( confirm("Вы действительно хотите удалить бригаду \"" + group_name + "\" ?" ) ) {
+        $.ajax({
+          method: 'POST',
+          url: '/data/removeGroup.php',
+          data: JSON.stringify( { group_id: group_id } ),
+          success: function(res) {
+            // console.log( res )
+            alert( res.message )
+            vm.fetchGroupsList()
+          }
+        })
+      }
+    },
     findGroup: function( needle, haystask ) {
       var vm = this
 
@@ -274,6 +308,147 @@ var app = new Vue({
         return moment(_date).format('YYYY-MM-DD')
       })
     },
+    openAddProject: function() {
+      this.showModal = false
+    },
+    addProject: function() {
+      var vm = this,
+          _query = {
+            project_name: '',
+            dates: {},
+            group: -1
+          }
+
+      _query.project_name   = vm.project_modal_data.title
+      _query.group          = vm.project_modal_data.group.id
+      _query.dates.contract = {
+        start: '0000-00-00',
+        end: '0000-00-00',
+        report: '0000-00-00'
+      }
+
+      // console.log(1)
+
+      _query.dates.real = {
+        work: {
+          start: '0000-00-00',
+          end:   '0000-00-00'
+        },
+        adm: {
+          start: '0000-00-00',
+          end:   '0000-00-00'
+        },
+        report: {
+          end:  '0000-00-00',
+          send: '0000-00-00'
+        },
+      }
+
+      console.log(2)
+
+
+      // console.log(21)
+      if ( typeof vm.project_modal_data.dates.contract.work[0] == 'object' )
+        _query.dates.contract.start = moment( vm.project_modal_data.dates.contract.work[0] ).format('YYYY-MM-DD')
+
+      // console.log(22)
+      if ( typeof vm.project_modal_data.dates.contract.work[1] == 'object' )
+        _query.dates.contract.end = moment( vm.project_modal_data.dates.contract.work[1] ).format('YYYY-MM-DD')
+
+      if ( typeof vm.project_modal_data.dates.contract.report == 'object' )
+        _query.dates.contract.report = moment( vm.project_modal_data.dates.contract.report ).format('YYYY-MM-DD')
+
+
+      // console.log(23)
+      if ( typeof vm.project_modal_data.dates.real.work[0] == 'object' )
+        _query.dates.real.work.start = moment( vm.project_modal_data.dates.real.work[0] ).format('YYYY-MM-DD')
+
+      // console.log(24)
+      if ( typeof vm.project_modal_data.dates.real.work[1] == 'object' )
+        _query.dates.real.work.end = moment( vm.project_modal_data.dates.real.work[1] ).format('YYYY-MM-DD')
+
+      // console.log(25)
+      if ( typeof vm.project_modal_data.dates.real.adm[0] == 'object' )
+        _query.dates.real.adm.start = moment( vm.project_modal_data.dates.real.adm[0] ).format('YYYY-MM-DD')
+
+      // console.log(26)
+      if ( typeof vm.project_modal_data.dates.real.adm[1] == 'object' )
+        _query.dates.real.adm.end = moment( vm.project_modal_data.dates.real.adm[1] ).format('YYYY-MM-DD')
+
+      // console.log(27)
+      if ( typeof vm.project_modal_data.dates.real.report[0] == 'object' )
+        _query.dates.real.report.end = moment( vm.project_modal_data.dates.real.report[0] ).format('YYYY-MM-DD')
+
+      // console.log(28)
+      if ( typeof vm.project_modal_data.dates.real.report[1] == 'object' )
+        _query.dates.real.report.send = moment( vm.project_modal_data.dates.real.report[1] ).format('YYYY-MM-DD')
+      // console.log(29)
+
+
+      // console.log(3)
+      $.ajax({
+        method: 'POST',
+        // url: '/data/printRes.php',
+        url: '/data/addProject.php',
+        data: JSON.stringify( _query ),
+        success: function( res ) {
+          alert( res.message )
+          console.log( res )
+          if ( res.status == 'success' ) {
+            vm.showModal = false
+            vm.fetchTimelineInfo();
+          }
+        }
+      })
+
+    },
+    addGroup: function() {
+      var vm = this,
+        _query = {
+          title:   vm.groups_modal_data.title,
+          workers: vm.groups_modal_data.workers
+        }
+
+
+      $.ajax({
+        method: 'POST',
+        // url: '/data/printRes.php',
+        url: '/data/addGroup.php',
+        data: JSON.stringify( _query ),
+        success: function( res ) {
+          alert( res.message )
+          console.log( res )
+          if ( res.status == 'success' ) {
+            vm.showWorkerModal = false
+            vm.fetchGroupsList();
+          }
+        }
+      })
+    },
+    clearProjectModal:function () {
+      this.project_modal_data = {
+        title: '',
+        dates: {
+          contract: {
+            work: ['0000-00-00','0000-00-00'],
+            report: '0000-00-00'
+          },
+          real: {
+            work:   ['0000-00-00','0000-00-00'],
+            adm:    ['0000-00-00','0000-00-00'],
+            report: ['0000-00-00','0000-00-00']
+          }
+        },
+        group: {
+          id: -1,
+          name: ''
+        }
+      }
+    },
+
+    saveProject: function() {
+      this.showModal = false
+    },
     createTask: function() {
       var vm = this
 
@@ -311,7 +486,7 @@ var app = new Vue({
       var vm = this,
           cnt = schedule.length
 
-
+        console.log( schedule )
 
       for ( var i = 0; i < cnt; i++ ) {
         schedule[i].users.sort( function(v1, v2) { return v1.id - v2.id } )
@@ -417,7 +592,7 @@ var app = new Vue({
             locale: "ru",
             editable: {
               add: true,          // add new items by double tapping
-              updateTime: true,   // drag items horizontally
+              updateTime: false,   // drag items horizontally
               updateGroup: false, // drag items from one group to another
               remove: false,      // delete an item by tapping the delete button top right
               overrideItems: true // allow these options to override item.editable
@@ -442,12 +617,12 @@ var app = new Vue({
               b.value = v;
             },
             onAdd: function (item, callback){
-              console.log( 'onAdd', item )
+              // console.log( 'onAdd', item )
               vm.showModal = true
               vm.action = 'add'
             },
             onUpdate: function (item, callback) {
-              console.log( 'onUpdate', item )
+              // console.log( 'onUpdate', item )
               vm.showModal = true
               vm.action = 'edit'
             },

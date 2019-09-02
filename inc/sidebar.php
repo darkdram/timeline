@@ -1,5 +1,5 @@
-<a href="/workers.php">Работники</a><br>
-<a href="/groups.php">Бригады</a><br><br>
+<a class="menu_item" href="/workers.php">Работники</a>
+<a class="menu_item" href="/groups.php">Бригады</a>
 
-<a href="/timeline.php">таймлайн</a><br>
-<a href="/timetable.php">таблица</a>
+<a class="menu_item" href="/timeline.php">таймлайн</a>
+<a class="menu_item" href="/timetable.php">таблица</a>

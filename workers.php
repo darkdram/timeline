@@ -6,7 +6,8 @@
       <input type="hidden" name="view" value="workers">
 
       <div  v-show=" view == 'workers' ">
-        <ul class="workers">
+        <h2>Список работников</h2>
+        <ul class="workers" v-cloak>
           <li v-for="worker in users">
             {{ worker.name }}
             <i @click="removeWorker(worker.id, worker.name)" class="removeBtn">x</i>
@@ -15,12 +16,12 @@
         <button class="modal-default-button btn btn-success" @click="action = 'add'; showWorkerModal = true">
             Добавить
         </button>
-        <button class="modal-default-button btn btn-success" @click="action = 'edit'; showWorkerModal = true">
+<!--         <button class="modal-default-button btn btn-success" @click="action = 'edit'; showWorkerModal = true">
             Изменить
-        </button>
+        </button> -->
       </div>
 
-      <modal v-if="showWorkerModal" @close="showWorkerModal = false">
+      <modal v-if="showWorkerModal" @close="showWorkerModal = false" v-cloak>
         <!-- <input type="text" class="datetime"> -->
         <h3 slot="header">{{ action_worker_label }}</h3>
 
@@ -41,6 +42,9 @@
           </button>
           <button class="modal-default-button btn btn-success" v-if="action == 'edit'" @click="showWorkerModal = false">
             Сохранить
+          </button>
+          <button class="modal-default-button btn btn-success" @click="showWorkerModal = false">
+            Отмена
           </button>
         </div>
       </modal>
