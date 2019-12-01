@@ -1,4 +1,7 @@
-<html>
+<?php
+require $_SERVER['DOCUMENT_ROOT'] .  '/system/bootstrap.php';
+
+?><html>
   <head>
     <title>Scheduler</title>
     <!-- Latest compiled and minified CSS -->
@@ -15,9 +18,7 @@
   </head>
 
   <body>
+    <? require $_SERVER['DOCUMENT_ROOT'] . '/inc/nav.php'; ?>
 
     <div class="container-fluid">
-      <div class="col-lg-2 col-md-2 col-sm-2">
-        <? require $_SERVER['DOCUMENT_ROOT'] . '/inc/sidebar.php'; ?>
-      </div>
-      <div class="col-lg-10 col-md-10 col-sm-10">
+      <div class="col-lg-12 col-md-12 col-sm-12">
