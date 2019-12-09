@@ -1,4 +1,4 @@
-<?
+<?php
   require $_SERVER['DOCUMENT_ROOT'] . '/inc/header.php';
 ?>
         
@@ -7,6 +7,7 @@
 
       <div  v-show=" view == 'table' ">
         <h2>Таблица объектов</h2>
+
 
         <div class="table-wrapper" v-if="sched && sched.length > 0">
           <table border="1" class="schedule table">
