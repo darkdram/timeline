@@ -3,6 +3,19 @@
 ?>
         
         <div id="app">
+          <div>
+            <!-- <pre> -->
+            <?php
+              if ( count( $nearestProjects ) > 0 ) {
+                  echo '<h2>Подходят к завершению договорные сроки проектов: </h2>';
+                  foreach( $nearestProjects as $prjcs ) {
+                    // echo $prjcs['content'] . ' - ' . date( 'd.m.Y', strtotime($prjcs['end']) ) . '<br>';
+                    echo '<p>' . $prjcs['content'] . ' - ' . date( 'd.m.Y', strtotime($prjcs['end']) ) . '</p>';
+                  }
+              }
+            ?>
+            <!-- </pre> -->
+          </div>
       <input type="hidden" name="view" value="table">
 
       <div  v-show=" view == 'table' ">
