@@ -7,7 +7,7 @@ class ProjectViewer {
 	}
 
 	function nearestProjects() {
-		$query = "SELECT * FROM `timetable` WHERE type = 'background' AND ( end BETWEEN '2019-09-27' AND DATE_ADD( '2019-09-27' , INTERVAL 10 DAY ) )";
+		$query = "SELECT * FROM `timetable` WHERE type = 'background' AND ( end BETWEEN 'CURRENT_DATE()' AND DATE_ADD( 'CURRENT_DATE()' , INTERVAL 10 DAY ) )";
 		$res = $this->db->query($query);
 		return $res->fetchAll(PDO::FETCH_ASSOC);
 	}
