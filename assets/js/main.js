@@ -100,6 +100,7 @@ var app = new Vue({
     susers: [],
     task_name: '',
     worker_name: '',
+    worker_id: '',
     sched: null,
     dates: {
       task_time: [],
@@ -205,8 +206,30 @@ var app = new Vue({
           // console.log( res )
           var _res = res.status == 'success' ? 'Работник добавлен' : 'Не удалось добавить работника'
           // alert( _res )
-          vm.worker_name = ''
-          vm.showWorkerModal = false
+          vm.closeWorkerModal()
+          vm.fetchWorkersList()
+        }
+      })
+    },
+    editWorker: function( _id, _name ) {
+      var vm = this
+
+      vm.worker_id = _id
+      vm.worker_name = _name
+      vm.showWorkerModal = true
+    },
+    saveWorker: function() {
+      var vm = this
+
+      $.ajax({
+        method: 'POST',
+        url: '/data/saveWorker.php',
+        data: JSON.stringify( { id: vm.worker_id, name: vm.worker_name } ),
+        success: function(res) {
+          // console.log( res )
+          var _res = res.status == 'success' ? 'Работник добавлен' : 'Не удалось добавить работника'
+          // alert( _res )
+          vm.closeWorkerModal()
           vm.fetchWorkersList()
         }
       })
@@ -225,6 +248,13 @@ var app = new Vue({
           }
         })
       }
+    },
+    closeWorkerModal: function() {
+      var vm = this
+
+      vm.worker_id = ''
+      vm.worker_name = ''
+      vm.showWorkerModal = false
     },
     removeGroup: function( group_id, group_name ) {
       var vm = this

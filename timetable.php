@@ -2,20 +2,20 @@
   require $_SERVER['DOCUMENT_ROOT'] . '/inc/header.php';
 ?>
         
-        <div id="app">
-          <div>
-            <!-- <pre> -->
-            <?php
-              if ( count( $nearestProjects ) > 0 ) {
-                  echo '<h2>Подходят к завершению договорные сроки проектов: </h2>';
-                  foreach( $nearestProjects as $prjcs ) {
-                    // echo $prjcs['content'] . ' - ' . date( 'd.m.Y', strtotime($prjcs['end']) ) . '<br>';
-                    echo '<p>' . $prjcs['content'] . ' - ' . date( 'd.m.Y', strtotime($prjcs['end']) ) . '</p>';
-                  }
+    <div id="app">
+      <div>
+        <!-- <pre> -->
+        <?php
+          if ( count( $nearestProjects ) > 0 ) {
+              echo '<h2>Подходят к завершению договорные сроки проектов: </h2>';
+              foreach( $nearestProjects as $prjcs ) {
+                // echo $prjcs['content'] . ' - ' . date( 'd.m.Y', strtotime($prjcs['end']) ) . '<br>';
+                echo '<p>' . $prjcs['content'] . ' - ' . date( 'd.m.Y', strtotime($prjcs['end']) ) . '</p>';
               }
-            ?>
-            <!-- </pre> -->
-          </div>
+          }
+        ?>
+        <!-- </pre> -->
+      </div>
       <input type="hidden" name="view" value="table">
 
       <div  v-show=" view == 'table' ">
@@ -23,7 +23,7 @@
 
 
         <div class="table-wrapper" v-if="sched && sched.length > 0">
-          <table border="1" class="schedule table">
+          <table border="1" class="schedule table table-schedule">
             <tr>
               <td>&nbsp;</td>
               <td>&nbsp;</td>

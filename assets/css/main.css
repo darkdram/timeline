@@ -84,8 +84,8 @@
 }
 
 
-.table > tbody > tr > td:nth-child(1),
-.table > tbody > tr > td:nth-child(2) {
+.table-schedule > tbody > tr > td:nth-child(1),
+.table-schedule > tbody > tr > td:nth-child(2) {
   min-width: 200px;
 }
 

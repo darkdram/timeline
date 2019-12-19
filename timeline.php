@@ -31,7 +31,6 @@
       <!-- <button id="show-modal" @click="showModal = true">Show Modal</button> -->
       <!-- use the modal component, pass in the prop -->
       <modal v-if="showModal" @close="showModal = false">
-        <!-- <input type="text" class="datetime"> -->
         <h3 slot="header">{{ action_label }}</h3>
 
         <div slot="body">
@@ -114,8 +113,6 @@
             </div>
           </div>
         </div>
-
-
 
         <div slot="footer">
           <button class="modal-default-button btn btn-success" v-if="action == 'add'" @click="addProject()">
